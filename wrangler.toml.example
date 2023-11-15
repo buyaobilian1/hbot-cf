@@ -1,0 +1,20 @@
+name = "hbot-cf"
+main = "src/worker.ts"
+compatibility_date = "2022-07-10"
+
+# Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
+# Note: Use secrets to store sensitive data.
+# Docs: https://developers.cloudflare.com/workers/platform/environment-variables
+# [vars]
+# SUPABASE_URL = ""
+# SUPABASE_KEY = ""
+# BOT_TOKEN = ""
+# BOT_USERNAME = ""
+# COVER_IMG_URL = ""
+# MAIN_TG_IDS = ""
+
+[triggers]
+crons = ["* * * * *"]
+
+[build.upload]
+compression = true
