@@ -7,8 +7,8 @@
 
 
 ## 项目简介
-本项目是由ts开发的telegram红包扫雷机器人
-您可以轻而易举的部署本项目到`cloudflare worker`中，并且不用花一分钱去租用服务器
+本项目是基于`cloudflare worker`由`ts`开发的telegram红包扫雷机器人
+`cloudflare worker`完全免费，所以你并不需要花钱去租用服务器
 本项目遵守 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html) 开源协议!
 
 ## 功能
