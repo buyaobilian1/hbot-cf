@@ -1,4 +1,4 @@
-## Telegram红包扫雷机器人CF版 - Alpha
+## Telegram红包雷机器人CF版 - Alpha
 
 <p style="text-align: center">
 <a href="https://www.gnu.org/licenses/gpl-3.0.html"><img src="https://img.shields.io/badge/license-GPLV3-blue" alt="license GPLV3"></a>
@@ -7,7 +7,7 @@
 
 
 ## 项目简介
-本项目是基于`cloudflare worker`由`ts`开发的telegram红包扫雷机器人   
+本项目是基于`cloudflare worker`由`ts`开发的telegram红包雷机器人   
 `cloudflare worker`完全免费，所以你并不需要花钱去租用服务器  
 本项目遵守 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html) 开源协议!  
 
@@ -29,3 +29,7 @@ wrangler deploy --keep-vars
 ## 加入交流/意见反馈
 - `电赚电吹俱乐部`交流群组[https://t.me/feijige120_club](https://t.me/feijige120_club)
 
+## 游戏展示
+![](doc/imgs/fabao.jpg)
+![](doc/imgs/zhonglei.jpg)
+![](doc/imgs/jieshuan.jpg)

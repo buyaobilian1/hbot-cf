@@ -1,11 +1,5 @@
 import {TgBot} from "../../lib/telegram-bot";
 
-const packAmount = 6;
-const packRate = 1.8
-const botUsername = 'pindaodaotest_bot'
-const coverImageUrl = 'https://pub-85281c80c72347508a7215db14b52360.r2.dev/hbot_cover.jpg'
-
-
 const getPackHandler = async (bot: TgBot) => {
 	const {data: callback_data, message, from, id: callback_query_id} = bot.update?.callback_query;
 	const { id: tgid, first_name = '', last_name = '' } = from;
@@ -26,10 +20,10 @@ const getPackHandler = async (bot: TgBot) => {
 			let { data: dbOrderDetails, error: e2 } = await bot.supabase.from('order_details').select().eq('order_id', orderId);
 			console.log('e2', e2);
 			if (e2) return;
-			const formatText = generateSettlementText(dbOrder, dbOrderDetails || []);
+			const formatText = generateSettlementText(dbOrder, dbOrderDetails || [], bot.env.PACK_RATE);
 			const reply_markup = {
 				inline_keyboard: [
-					...generateDefaultInlineKeyboards()
+					...generateDefaultInlineKeyboards(bot.env.BOT_USERNAME)
 				]
 			};
 			const payload = {
@@ -42,11 +36,11 @@ const getPackHandler = async (bot: TgBot) => {
 			await bot.sendRaw('editMessageCaption', payload);
 		} else {
 			// 更新进度
-			const fistInlineKeyboardText = formatFirstInlineKeyboardText(pack, progress, orderBoom);
+			const fistInlineKeyboardText = formatFirstInlineKeyboardText(bot.env.PACK_AMOUNT, pack, progress, orderBoom);
 			const reply_markup = {
 				inline_keyboard: [
 					[{ text: fistInlineKeyboardText, callback_data: `${callback_data}` }],
-					...generateDefaultInlineKeyboards()
+					...generateDefaultInlineKeyboards(bot.env.BOT_USERNAME)
 				]
 			};
 			const payload = {
@@ -76,7 +70,7 @@ const getPackHandler = async (bot: TgBot) => {
 const queryBalanceHandler = async (bot: TgBot) => {
     const {data: callback_data, message, from, id: callback_query_id} = bot.update?.callback_query;
     const { id: tgid, first_name = '', last_name = '' } = from;
-    let { data: { amount }, error } = await bot.supabase.from('users').select('amount').eq('tg_id', tgid).maybeSingle();
+    let { data: { amount }, error } = await bot.supabase.from('users').select('amount').eq('tg_id', tgid).maybeSingle() as any;
     await bot.answerCallbackQuery(callback_query_id, `当前余额：${amount} U.`);
     console.log('query balance', amount, error);
     return;
@@ -84,11 +78,11 @@ const queryBalanceHandler = async (bot: TgBot) => {
 
 
 
-function formatFirstInlineKeyboardText(pack: number, progress: number, orderBoom: number) {
+function formatFirstInlineKeyboardText(packAmount: number, pack: number, progress: number, orderBoom: number) {
 	return `🧧抢红包[ ${packAmount} / ${progress} ]总 ${pack} U💣雷${orderBoom}`
 }
 
-function generateDefaultInlineKeyboards() {
+function generateDefaultInlineKeyboards(botUsername: string) {
     return [
         [
             { text: '自助服务', url: `https://t.me/${botUsername}` },
@@ -102,7 +96,7 @@ function generateDefaultInlineKeyboards() {
     ];
 }
 
-function generateSettlementText(order: any, orderDetails: any[]) {
+function generateSettlementText(order: any, orderDetails: any[], packRate: number) {
 
     let zlyl: number = 0;
     orderDetails.forEach((v) => {

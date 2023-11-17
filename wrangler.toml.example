@@ -12,6 +12,8 @@ compatibility_date = "2022-07-10"
 # BOT_USERNAME = ""
 # COVER_IMG_URL = ""
 # MAIN_TG_IDS = ""
+# PACK_AMOUNT = "6"
+# PACK_RATE = "1.8"
 
 [triggers]
 crons = ["* * * * *"]

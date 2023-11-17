@@ -1,9 +1,5 @@
 import {TgBot} from "../../lib/telegram-bot";
 
-const packAmount = 6;
-const botUsername = 'pindaodaotest_bot'
-const coverImageUrl = 'https://pub-85281c80c72347508a7215db14b52360.r2.dev/hbot_cover.jpg'
-
 const startRoundHandler = async (bot: TgBot) => {
 	const { message } = bot.update;
 	const { chat, from } = message;
@@ -48,17 +44,17 @@ const startRoundHandler = async (bot: TgBot) => {
 
 	const textMsg = `【${tgusername}】发了一个${pack}U的红包，大家快来抢啊！`;
 	console.log(textMsg);
-	const fistInlineKeyboardText = formatFirstInlineKeyboardText(pack, 0, boom);
+	const fistInlineKeyboardText = formatFirstInlineKeyboardText(bot.env.PACK_AMOUNT, pack, 0, boom);
 	const reply_markup = {
 		inline_keyboard: [
 			[{ text: fistInlineKeyboardText, callback_data: `joinGame-${orderId}` }],
-			...generateDefaultInlineKeyboards()
+			...generateDefaultInlineKeyboards(bot.env.BOT_USERNAME)
 		]
 	};
 
 	const payload = {
 		chat_id: chat.id,
-		photo: coverImageUrl,
+		photo: bot.env.COVER_IMG_URL,
 		caption: textMsg,
 		reply_to_message_id: message.message_id,
 		reply_markup: JSON.stringify(reply_markup)
@@ -84,11 +80,11 @@ function generateRandomNumbers(totalAmount: number): number[] {
 	return redPacketAmounts;
 }
 
-function formatFirstInlineKeyboardText(pack: number, progress: number, orderBoom: number) {
+function formatFirstInlineKeyboardText(packAmount: number, pack: number, progress: number, orderBoom: number) {
 	return `🧧抢红包[ ${packAmount} / ${progress} ]总 ${pack} U💣雷${orderBoom}`
 }
 
-function generateDefaultInlineKeyboards() {
+function generateDefaultInlineKeyboards(botUsername: string) {
 	return [
 		[
 			{ text: '自助服务', url: `https://t.me/${botUsername}` },
