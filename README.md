@@ -1,4 +1,4 @@
-## Telegram红包机器人CF版 - Alpha
+## Telegram红包扫雷机器人CF版 - Alpha
 
 <p style="text-align: center">
 <a href="https://www.gnu.org/licenses/gpl-3.0.html"><img src="https://img.shields.io/badge/license-GPLV3-blue" alt="license GPLV3"></a>
