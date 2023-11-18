@@ -6,7 +6,7 @@ const getPackHandler = async (bot: TgBot) => {
 	const tgname = `${first_name}${last_name}` || '木有名字';
 
 	const [, orderId] = callback_data.split("-");
-	let { data, error } = await bot.supabase.rpc('get_pack', { tgid, tgname, oid: orderId }, { transaction: true });
+	let { data, error } = await bot.supabase.rpc('get_pack', { tgid, tgname, oid: orderId });
 	console.log('get_pack', data, error);
 	if (error) return;
 	const { code, done, isBoom, orderBoom, pack, subpack, msg, progress, settlement, orderDetails } = data;

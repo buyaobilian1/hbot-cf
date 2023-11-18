@@ -54,6 +54,43 @@ export class TgBot {
 		this.leftChatMemberHandler = func;
 	}
 
+	// 发送消息
+	public async send(text: string, args: {[key: string]: any}) {
+		const { message } = this.update;
+		const { chat } = message;
+		let sendPayload = {
+			chat_id: chat.id,
+			text,
+			...args
+		}
+		await this.sendRaw('sendMessage', sendPayload)
+	}
+
+	// 回复消息
+	public async reply(text: string, args?: {[key: string]: any}) {
+		const { message } = this.update;
+		const { chat } = message;
+		let sendPayload = {
+			chat_id: chat.id,
+			reply_to_message_id: message.message_id,
+			text,
+			...args
+		}
+		await this.sendRaw('sendMessage', sendPayload)
+	}
+
+	// 删除消息
+	public async deleteMessage(args?: { [key: string]: any }) {
+		const { message } = this.update;
+		const { chat } = message;
+		let sendPayload = {
+			chat_id: chat.id,
+			message_id: message.message_id,
+			...args
+		}
+		await this.sendRaw('deleteMessage', sendPayload)
+	}
+
 	public async answerCallbackQuery(callback_query_id: number, text: string, show_alert: boolean = true) {
 		let payload = {
 			callback_query_id,
