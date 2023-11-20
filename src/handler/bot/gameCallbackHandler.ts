@@ -12,7 +12,7 @@ const getPackHandler = async (bot: TgBot) => {
 	const { code, done, isBoom, orderBoom, pack, subpack, msg, progress, settlement, orderDetails } = data;
 	if (code == 0) {
 		const answerText = isBoom ? `恭喜老板，喜提💣一颗, 结算${settlement}U.` : `恭喜老板，抢到🧧${subpack}U.`;
-		await bot.answerCallbackQuery(callback_query_id, answerText);
+		await bot.answerCallbackQuery({text: answerText, show_alert: true});
 		if (done) {
 			let { data: dbOrder, error: e1 } = await bot.supabase.from('orders').select().eq('id', orderId).maybeSingle();
 			console.log('e1', e1);
@@ -50,33 +50,42 @@ const getPackHandler = async (bot: TgBot) => {
 			};
 			await bot.sendRaw('editMessageReplyMarkup', payload);
 		}
+		return;
 	} else if (code == -1) {
-		await bot.answerCallbackQuery(callback_query_id, '抢包失败.');
+		await bot.answerCallbackQuery({text: '抢包失败.', show_alert: true});
+		return;
 	} else if (code == 1) {
-		await bot.answerCallbackQuery(callback_query_id, msg);
+		await bot.answerCallbackQuery({text: msg, show_alert: true});
+		return;
 	} else if (code == 2) {
-		await bot.answerCallbackQuery(callback_query_id, '您已经抢过这个包.');
+		await bot.answerCallbackQuery({text: '您已经抢过这个包.', show_alert: true});
+		return;
 	} else if (code == 3) {
-		await bot.answerCallbackQuery(callback_query_id, '包已抢完.');
+		await bot.answerCallbackQuery({text: '包已抢完.', show_alert: true});
+		return;
 	} else if (code == 4) {
-		await bot.answerCallbackQuery(callback_query_id, '无法抢自己的包.');
+		await bot.answerCallbackQuery({text: '无法抢自己的包.', show_alert: true});
+		return;
 	}
 
 
 
-	return await bot.answerCallbackQuery(callback_query_id, '');
+	await bot.answerCallbackQuery({text: '', show_alert: true});
+	return;
 }
 
 const queryBalanceHandler = async (bot: TgBot) => {
     const {data: callback_data, message, from, id: callback_query_id} = bot.update?.callback_query;
     const { id: tgid, first_name = '', last_name = '' } = from;
     let { data: { amount }, error } = await bot.supabase.from('users').select('amount').eq('tg_id', tgid).maybeSingle() as any;
-    await bot.answerCallbackQuery(callback_query_id, `当前余额：${amount} U.`);
+    await bot.answerCallbackQuery({text: `当前余额：${amount} U.`, show_alert: true});
     console.log('query balance', amount, error);
     return;
 }
 
-
+const queryPromoHandler = async (bot: TgBot) => {
+	await bot.answerCallbackQuery()
+}
 
 function formatFirstInlineKeyboardText(packAmount: number, pack: number, progress: number, orderBoom: number) {
 	return `🧧抢红包[ ${packAmount} / ${progress} ]总 ${pack} U💣雷${orderBoom}`
@@ -137,6 +146,6 @@ function formatRowText(row: any) {
 
 export {
 	getPackHandler,
-	queryBalanceHandler
-
+	queryBalanceHandler,
+	queryPromoHandler
 }

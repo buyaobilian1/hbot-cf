@@ -54,48 +54,100 @@ export class TgBot {
 		this.leftChatMemberHandler = func;
 	}
 
-	// 发送消息
-	public async send(text: string, args: {[key: string]: any}) {
+	// 发送text消息
+	public async sendMessage(text: string, args: {[key: string]: any}) {
 		const { message } = this.update;
 		const { chat } = message;
-		let sendPayload = {
+		let payload = {
 			chat_id: chat.id,
 			text,
 			...args
 		}
-		await this.sendRaw('sendMessage', sendPayload)
+		await this.sendRaw('sendMessage', payload)
+	}
+
+	// 编辑text消息
+	public async editMessage(text: string, args: {[key: string]: any}) {
+		const { message } = this.update;
+		const { chat,  message_id } = message;
+		let payload = {
+			chat_id: chat?.id,
+			message_id,
+			text,
+			...args
+		}
+		await this.sendRaw('editMessageText', payload);
+	}
+
+	// 消息转发
+	public async forward(chatId: number, args?: {[key:string]: any}) {
+		const {message} = this.update;
+		const {chat, message_id} = message;
+
+		let payload = {
+			from_chat_id: chat?.id,
+			chat_id: chatId,
+			message_id,
+			...args
+		}
+		await this.sendRaw('forwardMessage', payload);
+	}
+
+	// 复制消息
+	public async copy(chatId: number, args?: {[key:string]: any}) {
+		const {message} = this.update;
+		const {chat, message_id} = message;
+
+		let payload = {
+			from_chat_id: chat?.id,
+			chat_id: chatId,
+			message_id,
+			...args
+		}
+		await this.sendRaw('forwardMessage', payload);
 	}
 
 	// 回复消息
 	public async reply(text: string, args?: {[key: string]: any}) {
-		const { message } = this.update;
-		const { chat } = message;
-		let sendPayload = {
+		let message, chat;
+		if (this.update?.message) {
+			message = this.update.message;
+			chat = message?.chat;
+		} else if (this.update?.callback_query) {
+			message = this.update.callback_query?.message;
+			chat = message.chat;
+		}
+
+		let payload = {
 			chat_id: chat.id,
 			reply_to_message_id: message.message_id,
 			text,
 			...args
 		}
-		await this.sendRaw('sendMessage', sendPayload)
+		await this.sendRaw('sendMessage', payload)
 	}
 
 	// 删除消息
 	public async deleteMessage(args?: { [key: string]: any }) {
 		const { message } = this.update;
 		const { chat } = message;
-		let sendPayload = {
+		let payload = {
 			chat_id: chat.id,
 			message_id: message.message_id,
 			...args
 		}
-		await this.sendRaw('deleteMessage', sendPayload)
+		await this.sendRaw('deleteMessage', payload);
 	}
 
-	public async answerCallbackQuery(callback_query_id: number, text: string, show_alert: boolean = true) {
+	public async answerCallbackQuery( args?: { [key: string]: any }) {
+		if (!this.update?.callback_query) {
+			console.error('is not callback query');
+			return Promise.resolve();
+		}
+		const { id } = this.update?.callback_query;
 		let payload = {
-			callback_query_id,
-			text,
-			show_alert
+			callback_query_id: id,
+			...args
 		}
 		await this.sendRaw('answerCallbackQuery', payload);
 	}
@@ -148,7 +200,7 @@ export class TgBot {
 		}
 		// 成员退群消息
 		if (update?.message?.left_chat_member && this.leftChatMemberHandler) {
-				await this.leftChatMemberHandler(this);
+			await this.leftChatMemberHandler(this);
 		}
 
 

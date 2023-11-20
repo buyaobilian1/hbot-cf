@@ -4,6 +4,7 @@ const addtionalText = `
 本群为USDT红包雷开源乱玩群
 
 相关指令
+发包 100-2 或 100/2
 玩家自助上分 /add 1000
 `
 

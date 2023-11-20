@@ -1,7 +1,7 @@
 import { IRequest } from "itty-router";
 import {TgBot} from "../lib/telegram-bot";
 import startRoundHandler from "./bot/startRoundHandler";
-import {getPackHandler, queryBalanceHandler} from "./bot/gameCallbackHandler";
+import {getPackHandler, queryBalanceHandler, queryPromoHandler} from "./bot/gameCallbackHandler";
 import onNewChatMember from "./bot/onNewChatMember";
 import {addCommandHandler, helpCommandHandler} from "./bot/gameCommandHandler";
 
@@ -19,12 +19,13 @@ const handler = async (request: IRequest, env: Env, ctx: ExecutionContext) => {
 		}
 
 		return true;
-	})
-	bot.onText(/^\/help$/, helpCommandHandler)
+	});
+	bot.onText(/^\/help$/, helpCommandHandler);
 	bot.onText(/^\/add \d+/, addCommandHandler);
 	bot.onText(/^\d+(\/|\-)[0-9]$/, startRoundHandler);
 	bot.onCallback(/^joinGame\-\d+/, getPackHandler);
 	bot.onCallback(/^queryBalance/, queryBalanceHandler);
+	bot.onCallback(/^queryPromo$/, queryPromoHandler);
 	bot.onNewChatMember(onNewChatMember);
 
 	await bot.handleWebhook(data);

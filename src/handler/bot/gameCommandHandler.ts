@@ -20,6 +20,7 @@ const addCommandHandler = async (bot: TgBot) => {
 const helpCommandHandler = async (bot: TgBot) => {
 	const replyText = `
 玩家自助:
+发包 100-2 或 100/2
 玩家自助上分 /add 100
 	`;
 
