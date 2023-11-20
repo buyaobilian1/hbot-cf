@@ -1,16 +1,17 @@
 import { IRequest } from "itty-router";
-import {TgBot} from "../lib/telegram-bot";
+import {TelegramBot} from "../lib/telegram-bot";
 import startRoundHandler from "./bot/startRoundHandler";
 import {getPackHandler, queryBalanceHandler, queryPromoHandler} from "./bot/gameCallbackHandler";
 import onNewChatMember from "./bot/onNewChatMember";
 import {addCommandHandler, helpCommandHandler} from "./bot/gameCommandHandler";
+import onMemberLeave from "./bot/onMemberLeave";
 
 
 const handler = async (request: IRequest, env: Env, ctx: ExecutionContext) => {
 	const data = await request.json();
 	console.log('update => ', data);
 
-	const bot = new TgBot(env);
+	const bot = new TelegramBot(env);
 
 	bot.setPrecondition((update: any) => {
 		if (update?.message) {
@@ -27,6 +28,7 @@ const handler = async (request: IRequest, env: Env, ctx: ExecutionContext) => {
 	bot.onCallback(/^queryBalance/, queryBalanceHandler);
 	bot.onCallback(/^queryPromo$/, queryPromoHandler);
 	bot.onNewChatMember(onNewChatMember);
+	bot.onLeftChatMember(onMemberLeave);
 
 	await bot.handleWebhook(data);
 

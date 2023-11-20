@@ -1,7 +1,7 @@
-import {TgBot} from "../../lib/telegram-bot";
+import {TelegramBot} from "../../lib/telegram-bot";
 
 // 命令上分
-const addCommandHandler = async (bot: TgBot) => {
+const addCommandHandler = async (bot: TelegramBot) => {
 	const { message } = bot.update;
 	const { text, from } = message;
 	const { id: telegramId } = from;
@@ -17,7 +17,7 @@ const addCommandHandler = async (bot: TgBot) => {
 	return await bot.reply(`成功上分${addAmount}, 当前分数：${d2.amount}`);
 }
 
-const helpCommandHandler = async (bot: TgBot) => {
+const helpCommandHandler = async (bot: TelegramBot) => {
 	const replyText = `
 玩家自助:
 发包 100-2 或 100/2

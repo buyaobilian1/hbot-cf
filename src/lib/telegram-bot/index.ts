@@ -1,14 +1,17 @@
 import {createClient, SupabaseClient} from "@supabase/supabase-js";
 
 type GenericAsyncFunction<T, R> = (arg: T) => Promise<R>;
-type WebhookHandleFunction = GenericAsyncFunction<TgBot, any>;
+type WebhookHandleFunction = GenericAsyncFunction<TelegramBot, any>;
 type ConditionFunction = (update: any) => boolean;
 
-export class TgBot {
-	private static readonly BASE_API = `https://api.telegram.org/bot`;
-	// private static readonly BASE_API = `http://localhost:3100/bot`;
+export class TelegramBot {
+	// private static readonly BASE_API = `https://api.telegram.org/bot`;
+	private static readonly BASE_API = `http://localhost:3100/bot`;
 
 	private _update: any;
+	private _message: any;
+	private _chat: any;
+	private _sender: any;
 	public readonly env: Env;
 	public readonly supabase: SupabaseClient;
 
@@ -17,6 +20,24 @@ export class TgBot {
 	}
 	set update(update: any) {
 		this._update = update;
+	}
+	get message(): any {
+		return this._message;
+	}
+	set message(message: any) {
+		this._message = message;
+	}
+	get chat(): any {
+		return this._chat;
+	}
+	set chat(chat: any) {
+		this._chat = chat;
+	}
+	get sender(): any {
+		return this._sender;
+	}
+	set sender(sender: any) {
+		this._sender = sender;
 	}
 
 	// 消息处理的前置条件
@@ -56,109 +77,97 @@ export class TgBot {
 
 	// 发送text消息
 	public async sendMessage(text: string, args: {[key: string]: any}) {
-		const { message } = this.update;
-		const { chat } = message;
 		let payload = {
-			chat_id: chat.id,
+			chat_id: this.chat.id,
 			text,
 			...args
-		}
-		await this.sendRaw('sendMessage', payload)
+		};
+		return await this.sendRaw('sendMessage', payload);
+	}
+
+	public async sendDice(args?: { [key: string]: any }) {
+		let payload = {
+			chat_id: this.chat.id,
+			...args
+		};
+		return await this.sendRaw('sendDice', payload);
 	}
 
 	// 编辑text消息
 	public async editMessage(text: string, args: {[key: string]: any}) {
-		const { message } = this.update;
-		const { chat,  message_id } = message;
 		let payload = {
-			chat_id: chat?.id,
-			message_id,
+			chat_id: this.chat?.id,
+			message_id: this.message.message_id,
 			text,
 			...args
-		}
-		await this.sendRaw('editMessageText', payload);
+		};
+		return await this.sendRaw('editMessageText', payload);
 	}
 
 	// 消息转发
 	public async forward(chatId: number, args?: {[key:string]: any}) {
-		const {message} = this.update;
-		const {chat, message_id} = message;
-
 		let payload = {
-			from_chat_id: chat?.id,
+			from_chat_id: this.chat?.id,
+			message_id: this.message?.message_id,
 			chat_id: chatId,
-			message_id,
 			...args
-		}
-		await this.sendRaw('forwardMessage', payload);
+		};
+		return await this.sendRaw('forwardMessage', payload);
 	}
 
 	// 复制消息
 	public async copy(chatId: number, args?: {[key:string]: any}) {
-		const {message} = this.update;
-		const {chat, message_id} = message;
-
 		let payload = {
-			from_chat_id: chat?.id,
+			from_chat_id: this.chat?.id,
 			chat_id: chatId,
-			message_id,
+			message_id: this.message.message_id,
 			...args
-		}
-		await this.sendRaw('forwardMessage', payload);
+		};
+		return await this.sendRaw('forwardMessage', payload);
 	}
 
 	// 回复消息
 	public async reply(text: string, args?: {[key: string]: any}) {
-		let message, chat;
-		if (this.update?.message) {
-			message = this.update.message;
-			chat = message?.chat;
-		} else if (this.update?.callback_query) {
-			message = this.update.callback_query?.message;
-			chat = message.chat;
-		}
-
 		let payload = {
-			chat_id: chat.id,
-			reply_to_message_id: message.message_id,
+			chat_id: this.chat.id,
+			reply_to_message_id: this.message.message_id,
 			text,
 			...args
-		}
-		await this.sendRaw('sendMessage', payload)
+		};
+		return await this.sendRaw('sendMessage', payload);
 	}
 
 	// 删除消息
 	public async deleteMessage(args?: { [key: string]: any }) {
-		const { message } = this.update;
-		const { chat } = message;
 		let payload = {
-			chat_id: chat.id,
-			message_id: message.message_id,
+			chat_id: this.chat.id,
+			message_id: this.message.message_id,
 			...args
-		}
-		await this.sendRaw('deleteMessage', payload);
+		};
+		return await this.sendRaw('deleteMessage', payload);
 	}
 
 	public async answerCallbackQuery( args?: { [key: string]: any }) {
 		if (!this.update?.callback_query) {
-			console.error('is not callback query');
+			console.error('is not callback query', this.update);
 			return Promise.resolve();
 		}
 		const { id } = this.update?.callback_query;
 		let payload = {
 			callback_query_id: id,
 			...args
-		}
-		await this.sendRaw('answerCallbackQuery', payload);
+		};
+		return await this.sendRaw('answerCallbackQuery', payload);
 	}
 
 	public async handleWebhook(update: any): Promise<any> {
-		this.update = update;
+		// console.log('wocao', update);
+		this.setPrivateData(update);
 
 		// 前置过滤
 		for (const condFun of this.preconditions) {
 			if (!condFun(update)) {
-				return
+				return;
 			}
 		}
 
@@ -207,8 +216,19 @@ export class TgBot {
 		return new Response();
 	}
 
+	private setPrivateData(update: any) {
+		this.update = update;
+		if (this.update?.message) {
+			this.message = this.update.message;
+		} else if (this.update?.callback_query) {
+			this.message = this.update.callback_query?.message;
+		}
+		this.chat = this.message?.chat;
+		this.sender = this.message.from;
+	}
+
 	public async sendRaw(apiName: string, payload: any) {
-		const url = `${TgBot.BASE_API}${this.env.BOT_TOKEN}/${apiName}`;
+		const url = `${TelegramBot.BASE_API}${this.env.BOT_TOKEN}/${apiName}`;
 		const res = await fetch(url, {
 			method: "POST",
 			headers: {

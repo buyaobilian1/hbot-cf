@@ -28,6 +28,7 @@ wrangler deploy --keep-vars
 ```
 
 ## 加入交流/意见反馈
+- `红包试玩群`[https://t.me/feijige120_hbtest](https://t.me/feijige120_hbtest)
 - `电赚电吹俱乐部`交流群组[https://t.me/feijige120_club](https://t.me/feijige120_club)
 
 ## 游戏展示

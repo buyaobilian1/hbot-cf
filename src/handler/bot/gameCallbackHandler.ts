@@ -1,6 +1,6 @@
-import {TgBot} from "../../lib/telegram-bot";
+import {TelegramBot} from "../../lib/telegram-bot";
 
-const getPackHandler = async (bot: TgBot) => {
+const getPackHandler = async (bot: TelegramBot) => {
 	const {data: callback_data, message, from, id: callback_query_id} = bot.update?.callback_query;
 	const { id: tgid, first_name = '', last_name = '' } = from;
 	const tgname = `${first_name}${last_name}` || '木有名字';
@@ -74,7 +74,7 @@ const getPackHandler = async (bot: TgBot) => {
 	return;
 }
 
-const queryBalanceHandler = async (bot: TgBot) => {
+const queryBalanceHandler = async (bot: TelegramBot) => {
     const {data: callback_data, message, from, id: callback_query_id} = bot.update?.callback_query;
     const { id: tgid, first_name = '', last_name = '' } = from;
     let { data: { amount }, error } = await bot.supabase.from('users').select('amount').eq('tg_id', tgid).maybeSingle() as any;
@@ -83,8 +83,13 @@ const queryBalanceHandler = async (bot: TgBot) => {
     return;
 }
 
-const queryPromoHandler = async (bot: TgBot) => {
+const queryPromoHandler = async (bot: TelegramBot) => {
 	await bot.answerCallbackQuery()
+	// const res = await bot.sendDice() as any;
+	// if (res.ok) {
+	// 	const { result } = res;
+	// 	console.log(result?.dice);
+	// }
 }
 
 function formatFirstInlineKeyboardText(packAmount: number, pack: number, progress: number, orderBoom: number) {

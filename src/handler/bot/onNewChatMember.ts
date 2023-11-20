@@ -1,4 +1,5 @@
-import {TgBot} from "../../lib/telegram-bot";
+import {TelegramBot} from "../../lib/telegram-bot";
+import {escapeText} from "../../lib/telegram-bot/utils";
 
 const addtionalText = `
 本群为USDT红包雷开源乱玩群
@@ -8,7 +9,7 @@ const addtionalText = `
 玩家自助上分 /add 1000
 `
 
-const onNewChatMember = async (bot: TgBot) => {
+const onNewChatMember = async (bot: TelegramBot) => {
 	const { message_id, new_chat_members, chat } = bot.update.message;
 	const [ newMember ] = new_chat_members;
 	// 是否已经存在
@@ -19,7 +20,8 @@ const onNewChatMember = async (bot: TgBot) => {
 		let { error } = await bot.supabase.from('users').insert({ tg_id: newMember.id });
 		console.log('new member', error);
 		if (error) return;
-		const replyText = `你好，[${newMember.first_name}](tg://user?id=${newMember.id})，欢迎光临` + addtionalText
+		console.log(escapeText("MarkdownV2", addtionalText))
+		const replyText = `你好，[${newMember.first_name}](tg://user?id=${newMember.id})，欢迎光临` + escapeText("MarkdownV2", addtionalText)
 		const replyPayload = {
 			chat_id: chat.id,
 			text: replyText,
@@ -27,7 +29,8 @@ const onNewChatMember = async (bot: TgBot) => {
 		};
 		await bot.sendRaw('sendMessage', replyPayload);
 	} else {
-		const replyText = `你好，[${newMember.first_name}](tg://user?id=${newMember.id})，欢迎回家` + addtionalText
+		console.log(escapeText("MarkdownV2", addtionalText))
+		const replyText = `你好，[${newMember.first_name}](tg://user?id=${newMember.id})，欢迎回家` + escapeText("MarkdownV2", addtionalText)
 		const replyPayload = {
 			chat_id: chat.id,
 			text: replyText,

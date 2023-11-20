@@ -1,6 +1,6 @@
-import {TgBot} from "../../lib/telegram-bot";
+import {TelegramBot} from "../../lib/telegram-bot";
 
-const startRoundHandler = async (bot: TgBot) => {
+const startRoundHandler = async (bot: TelegramBot) => {
 	const { message } = bot.update;
 	const { chat, from } = message;
 
