@@ -5,8 +5,8 @@ type WebhookHandleFunction = GenericAsyncFunction<TelegramBot, any>;
 type ConditionFunction = (update: any) => boolean;
 
 export class TelegramBot {
-	// private static readonly BASE_API = `https://api.telegram.org/bot`;
-	private static readonly BASE_API = `http://localhost:3100/bot`;
+	private static readonly BASE_API = `https://api.telegram.org/bot`;
+	// private static readonly BASE_API = `http://localhost:3100/bot`;
 
 	private _update: any;
 	private _message: any;
