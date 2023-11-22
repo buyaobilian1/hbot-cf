@@ -5,8 +5,8 @@ type WebhookHandleFunction = GenericAsyncFunction<TelegramBot, any>;
 type ConditionFunction = (update: any) => boolean;
 
 export class TelegramBot {
-	// private static readonly BASE_API = `https://api.telegram.org/bot`;
-	private static readonly BASE_API = `http://localhost:3100/bot`;
+	private static readonly BASE_API = `https://api.telegram.org/bot`;
+	// private static readonly BASE_API = `http://localhost:3100/bot`;
 
 	private _update: any;
 	private _message: any;
@@ -161,8 +161,7 @@ export class TelegramBot {
 	}
 
 	public async handleWebhook(update: any): Promise<any> {
-		// console.log('wocao', update);
-		this.setPrivateData(update);
+		this.setSomeData(update);
 
 		// 前置过滤
 		for (const condFun of this.preconditions) {
@@ -216,7 +215,7 @@ export class TelegramBot {
 		return new Response();
 	}
 
-	private setPrivateData(update: any) {
+	private setSomeData(update: any) {
 		this.update = update;
 		if (this.update?.message) {
 			this.message = this.update.message;
